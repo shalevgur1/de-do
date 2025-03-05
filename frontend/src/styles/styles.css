@@ -103,3 +103,57 @@ form button {
   cursor: pointer;
   outline: none;
 }
+
+/* Center the loading message */
+.loading-container {
+  position: fixed;  /* Make the container stay fixed on the screen */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;  /* Center horizontally */
+  align-items: center;      /* Center vertically */
+  background: rgba(0, 0, 0, 0.5);  /* Optional: dark overlay */
+  z-index: 1000;            /* Make sure the loading message is above other content */
+}
+
+.loading-container h2 {
+  color: white;  /* Set the text color */
+  font-size: 24px;  /* Customize the text size */
+}
+
+/* Completed message container */
+.completed-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.4);  /* Same semi-transparent black as loading screen */
+  z-index: 1000;
+}
+
+.completed-container h2 {
+  color: white;
+  font-size: 24px;
+}
+
+.completed-container button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #f5ba13;  /* Green button for success */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.completed-container button:hover {
+  background-color: #f5ba13;
+}

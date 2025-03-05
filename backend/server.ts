@@ -55,9 +55,11 @@ app.post("/api/add-task", async (req: Request, res: Response) => {
     const taskDescription = req.body.description;
     // Check for task description
     if (!taskDescription) res.status(400).json({ error: "Task description is required" });
-    const addResult = await ethManager.addTask(taskDescription);
-    if (addResult) res.status(201).json({ message: "Task added successfully to the blockchain!"});
-    else res.status(400).json({ error: "Error with adding task to blockchain" });
+    else {
+        const addResult = await ethManager.addTask(taskDescription);
+        if (addResult) res.status(201).json({ message: "Task added successfully to the blockchain!"});
+        else res.status(400).json({ error: "Error with adding task to blockchain" });
+    }
 });
 
 app.patch("/api/complete-task", async (req: Request, res: Response) => {
@@ -65,11 +67,12 @@ app.patch("/api/complete-task", async (req: Request, res: Response) => {
     const taskId = req.body.id;
     // Check for task description
     if (!taskId) res.status(400).json({ error: "Task id is required" });
-    const completeResult = await ethManager.completeTask(taskId);
-    if (completeResult) res.status(201).json({ message: "Task is marked as completed successfully on the blockchain!"});
-    else res.status(400).json({ error: "Error with adding task to blockchain" });
+    else {
+        const completeResult = await ethManager.completeTask(taskId);
+        if (completeResult) res.status(201).json({ message: "The task has been successfully marked as completed on the blockchain!"});
+        else res.status(400).json({ error: "Error with mark task as completed on the blockchain" });
+    }
 });
-
 
 // Start the server
 app.listen(PORT, () => {

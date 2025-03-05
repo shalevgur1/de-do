@@ -8,7 +8,11 @@ import { SERVER_URL } from "../config/constants";
 function App() {
 
   // Configure React states
-  const [tasks, setTasks] = useState([]);                     // List of tasks on dashboard
+  const [tasks, setTasks] = useState([]);                       // List of tasks on dashboard
+  const [isLoading, setIsLoading] = useState(false);            // Set loading screen during transactions
+  const [isResult, setIsResult] = useState(false);              // Check for transaction result screen
+  const [resultText, setResultText] = useState("");             // Set transaction result screen text
+  const [tasksUpdated, setTasksUpdated] = useState(false);      // Update tasks list with useEffect after adding a new task
 
   // Fetch tasks from the backend when the component mounts
   useEffect( () => {
@@ -23,12 +27,15 @@ function App() {
       }
     }
     fetchTasks();
-  }, []);
+  }, [tasksUpdated]);
 
   async function addTask(newTask) {
     // Add a new task and send to backend
     // Send added task to backend
+    let resultMessage = "An issue occurred with the transaction...";
+    setIsLoading(true);
     try {
+      // Send api request
       const response = await fetch(`${SERVER_URL}/api/add-task`, {
         method: "POST",
         headers: {
@@ -37,25 +44,29 @@ function App() {
         body: JSON.stringify(newTask),
       });
       if (!response.ok) {
-        throw new Error("Failed to add task");
+        throw new Error(response.error);
       } else {
         const data = await response.json();
-        console.log(data.message);
+        resultMessage = data.message;
+        console.log(resultMessage);
+        // Update frontend with new task only if task was added to blockchain
       }
     } catch (err) {
-      console.error("Error adding task:", err);
+      console.error("Error:", err);
     }
-    // Update frontend with added task
-    setTasks(prevTasks => {
-      return [...prevTasks, newTask];
-    });
+    setIsLoading(false);
+    setResultText(resultMessage);
+    setIsResult(true);
   }
 
 
   async function completeTask(id) {
     // Complete a task and send complition to backend
     // Send added task to backend
+    let resultMessage = "An issue occurred with the transaction...";
+    setIsLoading(true);
     try {
+      // Send api request
       const response = await fetch(`${SERVER_URL}/api/complete-task`, {
         method: "PATCH",
         headers: {
@@ -64,36 +75,65 @@ function App() {
         body: JSON.stringify({ id: id }),
       });
       if (!response.ok) {
-        throw new Error("Failed to add task");
+        throw new Error(response.error);
       } else {
+          // Remove completed task from frontend only if task was marked completed on the blockchain 
+          setTasks(prevTasks => {
+            return prevTasks.filter((taskItem, index) => {
+              return taskItem.id !== id;
+            });
+          });
         const data = await response.json();
-        console.log(data.message);
+        resultMessage = data.message;
+        console.log(resultMessage);
       }
     } catch (err) {
-      console.error("Error adding task:", err);
+      console.error("Error:", err);
     }
-    // Remove completed task from frontend
-    setTasks(prevTasks => {
-      return prevTasks.filter((taskItem, index) => {
-        return taskItem.id !== id;
-      });
-    });
+    setIsLoading(false);
+    setResultText(resultMessage);
+    setIsResult(true);
   }
 
   return (
     <div>
       <Header />
-        <CreateArea onAdd={addTask} />
-        {tasks.map((taskItem, index) => {
-          return (
-            <Task
-              key={taskItem.id}
-              id={taskItem.id}
-              description={taskItem.description}
-              onComplete={completeTask}
-            />
-          );
-        })}
+      
+      {/* Loading screen */}
+      {isLoading ? (
+        <div className="loading-container">
+          <h2>Waiting for your transaction to be mined...</h2>
+        </div>
+      ) : (
+        // Display after loading is finished
+        isResult ? (
+          <div className="completed-container">
+            <h2>{resultText}</h2>
+            <button onClick={() => { 
+              setIsResult(false);
+              setIsLoading(false);
+              setTasksUpdated(prev => !prev);       // Fetch tasks again from backend
+              }}>
+              Close
+            </button>
+          </div>
+        ) : (
+          <>
+            <CreateArea onAdd={addTask} />
+            {tasks.map((taskItem) => {
+              return (
+                <Task
+                  key={taskItem.id}
+                  id={taskItem.id}
+                  description={taskItem.description}
+                  onComplete={completeTask}
+                />
+              );
+            })}
+          </>
+        )
+      )}
+      
       <Footer />
     </div>
   );
