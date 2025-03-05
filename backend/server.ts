@@ -13,30 +13,37 @@ import { SERVER_URL, PORT } from './config/appConfig.js';
 const provider = new ethers.JsonRpcProvider("https://sepolia.infura.io/v3/e65a0c1ae488481eac0046bdda9440b2");
 const contractAddress = '0xC282597ff29ca5b8c8dC8783E27503a79cb42a5D';
 
-// Create a contract instance connected to the provider
-const contract = new ethers.Contract(contractAddress, abi, provider);
+// Define the Task structure based on your contract's output
+interface Task {
+    id: number;
+    description: string;
+    completed: boolean;
+}
+
+// Create a contract instance and specify the custom interface with the getTasks method
+const contract: any = new ethers.Contract(contractAddress, abi, provider);
 
 // Add provided wallet as a signer
 const PRIVATE_KEY = "0a0fad38721f4b87afd7623e037aa47cdfdc3a3e1cfbae94ed7736a204ae4977"
 const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
 const contractWithSigner = contract.connect(wallet);
 
-// Get all tasks that are not already completed from the blockchain
+// Initialize tasks as empty list
+let tasks: Task[] = [];
+
 async function getAllTasks() {
-    const tasks = await contractWithSigner.getTasks();
-    console.log(tasks);
+    // Read all tasks from blockchain
+    const tasks: Task[] = await contractWithSigner.getTasks();
+    return tasks;
 }
 
-// Define the Task interface
-interface Task {
-    id: number; 
-    description: string;
-    completed: boolean;
-  }
-  
-// Initialize an empty list of tasks
-let items: Task[] = [];
-let temp = getAllTasks();
+async function initializeTasks() {
+    // Get all tasks that are not already completed from the blockchain
+    tasks = await getAllTasks();
+}
+
+// Call the function to initialize the tasks
+initializeTasks();
   
 
 
@@ -54,19 +61,34 @@ app.use(morgan("tiny"));
 app.use(express.static(path.join(__dirname, '../frontend/build')));
 
 app.get("/", async (req: Request, res: Response) => {
-    // Get all todo items
+    // Get main page
     res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
 });
 
-app.post("/add", async (req: Request, res: Response) => {
+app.get("/api/all-tasks", async (req: Request, res: Response) => {
+    // Get all todo list tasks
+    const formattedTasks = tasks
+    .filter((task: Task) => !task.completed) // Filter out completed tasks
+    .map((task: Task) => {
+        // Fomrat tasks before sending to client
+        return {
+            id: task.id.toString(),  // Convert BigInt to string
+            name: task.description,
+            completed: task.completed
+        };
+    });
+    res.json(formattedTasks);
+});
+
+app.post("/api/add", async (req: Request, res: Response) => {
     // Add a new todo item
 });
 
-app.post("/update", async (req: Request, res: Response) => {
+app.post("/api/update", async (req: Request, res: Response) => {
     // Update a todo item
 });
 
-app.post("/complete", async (req: Request, res: Response) => {
+app.post("/api/complete", async (req: Request, res: Response) => {
     // Delete a todo item
 });
 
