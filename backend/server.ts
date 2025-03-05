@@ -73,7 +73,7 @@ app.get("/api/all-tasks", async (req: Request, res: Response) => {
         // Fomrat tasks before sending to client
         return {
             id: task.id.toString(),  // Convert BigInt to string
-            name: task.description,
+            description: task.description,
             completed: task.completed
         };
     });

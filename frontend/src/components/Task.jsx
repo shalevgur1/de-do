@@ -5,13 +5,13 @@ function Task(props) {
 
   function handleClick() {
     // Handle click on delete or complete buttons
-    props.onDelete(props.id);
+    props.onComplete(props.id);
   }
 
   return (
     <div className="task">
       <h1>{props.title}</h1>
-      <p>{props.content}</p>
+      <p>{props.description}</p>
       <button onClick={handleClick}>Complete</button>
     </div>
   );

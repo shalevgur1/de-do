@@ -2,8 +2,7 @@ import React, { useState } from "react";
 
 function CreateArea(props) {
   const [task, setTask] = useState({
-    title: "",
-    content: ""
+    description: ""
   });
 
   function handleChange(event) {
@@ -20,8 +19,7 @@ function CreateArea(props) {
   function submitTask(event) {
     props.onAdd(task);
     setTask({
-      title: "",
-      content: ""
+      description: ""
     });
     event.preventDefault();
   }
@@ -29,16 +27,10 @@ function CreateArea(props) {
   return (
     <div>
       <form>
-        <input
-          name="title"
-          onChange={handleChange}
-          value={task.title}
-          placeholder="Title"
-        />
         <textarea
-          name="content"
+          name="description"
           onChange={handleChange}
-          value={task.content}
+          value={task.description}
           placeholder="Description..."
           rows="3"
         />

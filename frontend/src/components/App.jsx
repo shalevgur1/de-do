@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import Task from "./Task";
@@ -10,18 +10,18 @@ function App() {
   // Configure React states
   const [tasks, setTasks] = useState([]);                     // List of tasks on dashboard
 
-  // Detect web3 provider (should be MetaMask)
-  const detectCurrentProvider = () => {
-    let provider;
-    if (window.ethereum) {
-      provider = window.ethereum;
-    } else if (window.web3) {
-      provider = window.web3.currentProvider;
-    } else {
-      console.log("NON ETHEREUM BROWSER DETECTED: You should install MetaMask");
+  // Fetch tasks from the backend when the component mounts
+  useEffect( async () => {
+    // Fetch tasks from the API
+    try {
+      const response = await fetch(`${SERVER_URL}/api/all-tasks`, {method: "GET"});
+      const data = await response.json();
+      setTasks(data);
+    } catch (err) {
+      console.error('Error fetching tasks:', err);
     }
-    return provider;
-  }
+  }, []); // Empty dependency array ensures it runs once when the component mounts
+
 
   // Add a task to your dashboard
   function addTask(newTask) {
@@ -47,10 +47,9 @@ function App() {
           return (
             <Task
               key={index}
-              id={index}
-              title={taskItem.title}
-              content={taskItem.content}
-              onDelete={completeTask}
+              id={taskItem.id}
+              description={taskItem.description}
+              onComplete={completeTask}
             />
           );
         })}
