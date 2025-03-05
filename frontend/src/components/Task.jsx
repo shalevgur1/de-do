@@ -10,7 +10,6 @@ function Task(props) {
 
   return (
     <div className="task">
-      <h1>{props.title}</h1>
       <p>{props.description}</p>
       <button onClick={handleClick}>Complete</button>
     </div>

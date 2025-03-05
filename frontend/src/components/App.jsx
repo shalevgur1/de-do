@@ -53,7 +53,6 @@ function App() {
 
 
   async function completeTask(id) {
-    console.log(id);
     // Complete a task and send complition to backend
     // Send added task to backend
     try {
@@ -62,7 +61,7 @@ function App() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(id),
+        body: JSON.stringify({ id: id }),
       });
       if (!response.ok) {
         throw new Error("Failed to add task");
@@ -76,7 +75,6 @@ function App() {
     // Remove completed task from frontend
     setTasks(prevTasks => {
       return prevTasks.filter((taskItem, index) => {
-        console.log(taskItem.id);
         return taskItem.id !== id;
       });
     });
