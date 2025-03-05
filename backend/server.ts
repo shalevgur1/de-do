@@ -1,5 +1,6 @@
 import bodyParser from "body-parser";
 import morgan from "morgan";
+import dotenv from 'dotenv';
 import express, { Request, Response, NextFunction } from "express";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
@@ -10,10 +11,19 @@ import { SERVER_URL, PORT } from './config/appConfig.js';
 import abi from './config/abi/abi.json' with { type: "json" };
 import { EthereumManager } from './ethManager/EthereumManager.js';
 
-// Setup RPC and contract interactions with ethers
-const providerUrl = "https://holesky.infura.io/v3/e65a0c1ae488481eac0046bdda9440b2";
-const contractAddress = '0xC61966085893F3ff49becf192D5caFb9CA9d9Fd7';
-const PRIVATE_KEY = "0a0fad38721f4b87afd7623e037aa47cdfdc3a3e1cfbae94ed7736a204ae4977"
+
+// Load variables from .env file into process.env
+dotenv.config();
+
+// Access the variables
+const providerUrl = process.env.INFURA_PROVIDER_URL;
+const contractAddress = process.env.CONTRACT_ADDRESS;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+
+// Check for undefined variables and handle errors if needed
+if (!providerUrl || !contractAddress || !PRIVATE_KEY) {
+    throw new Error("Missing necessary environment variables");
+}
 
 const ethManager = new EthereumManager(PRIVATE_KEY, providerUrl, contractAddress, abi);
 
