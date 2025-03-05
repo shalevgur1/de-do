@@ -16,17 +16,19 @@
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "ethers": "^6.13.5",
     "express": "^4.21.2",
     "morgan": "^1.10.0",
     "web3": "^4.16.0"
   },
   "devDependencies": {
+    "@typechain/ethers-v5": "^11.1.2",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.8",
     "@types/pg": "^8.11.11",
+    "ethers": "^6.13.5",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
+    "typechain": "^8.3.2",
     "typescript": "^5.8.2"
   }
 }
