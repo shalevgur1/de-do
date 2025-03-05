@@ -53,6 +53,7 @@ function App() {
 
 
   async function completeTask(id) {
+    console.log(id);
     // Complete a task and send complition to backend
     // Send added task to backend
     try {

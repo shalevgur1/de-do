@@ -63,11 +63,12 @@ app.post("/api/add-task", async (req: Request, res: Response) => {
 app.patch("/api/complete-task", async (req: Request, res: Response) => {
     // Complete a todo item
     const taskId = req.body.id;
+    console.log(req.body);
     // Check for task description
-    if (!taskId) res.status(400).json({ error: "Task id is required" });
-    const completeResult = await ethManager.completeTask(taskId);
-    if (completeResult) res.status(201).json({ message: "Task added successfully"});
-    res.status(400).json({ error: "Error with adding task to blockchain" })
+    // if (!taskId) res.status(400).json({ error: "Task id is required" });
+    // const completeResult = await ethManager.completeTask(taskId);
+    // if (completeResult) res.status(201).json({ message: "Task added successfully"});
+    // res.status(400).json({ error: "Error with adding task to blockchain" })
 });
 
 

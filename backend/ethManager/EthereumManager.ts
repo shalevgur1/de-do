@@ -15,11 +15,13 @@ export class EthereumManager {
     private contract: any;
     private contractWithSigner;
     private contractAddress: string;
+    private providerUrl: string;
     private abi: Array<any>;
     private tasks: Task[] = [];                 // Initialize tasks as empty list
 
     constructor(privateKey: string, providerUrl: string, contractAddress: string, abi: Array<any>) {
         this.abi = abi;
+        this.providerUrl = providerUrl;
         // Initialize provider and wallet
         this.provider = new ethers.JsonRpcProvider(providerUrl);
         this.wallet = new ethers.Wallet(privateKey, this.provider);
@@ -30,7 +32,7 @@ export class EthereumManager {
         this.contractWithSigner = this.contract.connect(this.wallet);
         console.log(`Wallet address: ${this.wallet.address}`);
         // Initialize tasks with existing tasks
-        this.initializeTasks();
+        //this.initializeTasks();
       }
 
     private async getAllTasks() {
@@ -61,57 +63,59 @@ export class EthereumManager {
 
 
     public async addTask (description: string) {
-        const providerUrl = "https://holesky.infura.io/v3/e65a0c1ae488481eac0046bdda9440b2";
-        const contractAddress = '0xC61966085893F3ff49becf192D5caFb9CA9d9Fd7';
-        const PRIVATE_KEY = '0x0a0fad38721f4b87afd7623e037aa47cdfdc3a3e1cfbae94ed7736a204ae4977';
-        const web3: Web3 = new Web3(new Web3.providers.HttpProvider(providerUrl));
-        const contract = new web3.eth.Contract(this.abi, contractAddress); // Contract address
+        // const providerUrl = "https://holesky.infura.io/v3/e65a0c1ae488481eac0046bdda9440b2";
+        // const contractAddress = '0xC61966085893F3ff49becf192D5caFb9CA9d9Fd7';
+        // const PRIVATE_KEY = '0x0a0fad38721f4b87afd7623e037aa47cdfdc3a3e1cfbae94ed7736a204ae4977';
+        // const web3: Web3 = new Web3(new Web3.providers.HttpProvider(providerUrl));
+        // const contract = new web3.eth.Contract(this.abi, contractAddress); // Contract address
 
-        const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
-        web3.eth.accounts.wallet.add(account);
+        // const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY);
+        // web3.eth.accounts.wallet.add(account);
 
-        //const result = await contract.methods.getSomeText().call();
+        // //const result = await contract.methods.getSomeText().call();
 
-        try {
-            const currentNonce = await web3.eth.getTransactionCount(account.address);
-            console.log("Current nonce:", currentNonce);
-            console.log("make transaction");
-            const result = await contract.methods.addTask(description).send({
-                from: this.wallet.address
-            });
-            console.log(`Transaction successful`);
-            return true;
-        } catch (error) {
-            console.error("Error calling addTask():", error);
-            return false;
-        }
-
-
-
-        //try {
-        // Send transaction to RPC provider
-        //     console.log("Send transaction to RPC provider...");
-        //     const tx = await this.wallet.sendTransaction({
-        //         to: this.contractAddress,  // Contract address
-        //         data: this.contract.interface.encodeFunctionData("addTask", [description]),
-        //         gasLimit: ethers.parseUnits("100000", "wei"), // Adjust based on gas estimate
-        //         gasPrice: await this.provider.getFeeData().then(fee => fee.gasPrice), // Dynamic gas price
+        // try {
+        //     const currentNonce = await web3.eth.getTransactionCount(account.address);
+        //     console.log("Current nonce:", currentNonce);
+        //     console.log("make transaction");
+        //     const result = await contract.methods.addTask(description).send({
+        //         from: this.wallet.address
         //     });
-        //     // const tx = await this.contractWithSigner.addTask(description);
-        //     // Wait for the transaction to be mined
-        //     await tx.wait();
-        //     console.log(tx);
-    
-        //     // Fetch the updated task list after confirmation
-        //     //const updatedTasks = await this.getAllTasks();
-        //     //console.log("Updated Tasks:", updatedTasks);
-    
-        //     console.log("Task added successfully!");
+        //     console.log(`Transaction successful`);
         //     return true;
-        // } catch (err) {
-        //     console.error("Error adding task:", err);
+        // } catch (error) {
+        //     console.error("Error calling addTask():", error);
         //     return false;
         // }
+
+
+
+        try {
+            console.log(this.providerUrl);
+            console.log(this.contractAddress);
+            // Send transaction to RPC provider
+            console.log("Send transaction to RPC provider...");
+            const tx = await this.wallet.sendTransaction({
+                to: this.contractAddress,  // Contract address
+                data: this.contract.interface.encodeFunctionData("addTask", [description]),
+                gasLimit: ethers.parseUnits("100000", "wei"), // Adjust based on gas estimate
+                gasPrice: ethers.parseUnits("100", "gwei"), // Increase gas price (in Gwei)
+            });
+            // const tx = await this.contractWithSigner.addTask(description);
+            // Wait for the transaction to be mined
+            await tx.wait();
+            console.log(tx);
+    
+            // Fetch the updated task list after confirmation
+            //const updatedTasks = await this.getAllTasks();
+            //console.log("Updated Tasks:", updatedTasks);
+    
+            console.log("Task added successfully!");
+            return true;
+        } catch (err) {
+            console.error("Error adding task:", err);
+            return false;
+        }
     }
     
     public async completeTask(id: number) {
