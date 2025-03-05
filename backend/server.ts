@@ -3,6 +3,7 @@ import morgan from "morgan";
 import express, { Request, Response, NextFunction } from "express";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import { ethers } from 'ethers';
 // Importing global constants
 import { SERVER_URL, PORT } from './config/appConfig.js';
 // Importing blockchain related content
@@ -10,11 +11,11 @@ import abi from './config/abi/abi.json' with { type: "json" };
 import { EthereumManager } from './ethManager/EthereumManager.js';
 
 // Setup RPC and contract interactions with ethers
-const provider = "https://holesky.infura.io/v3/e65a0c1ae488481eac0046bdda9440b2";
+const providerUrl = "https://holesky.infura.io/v3/e65a0c1ae488481eac0046bdda9440b2";
 const contractAddress = '0xC61966085893F3ff49becf192D5caFb9CA9d9Fd7';
 const PRIVATE_KEY = "0a0fad38721f4b87afd7623e037aa47cdfdc3a3e1cfbae94ed7736a204ae4977"
 
-const ethManager = new EthereumManager(PRIVATE_KEY, provider, contractAddress, abi);
+const ethManager = new EthereumManager(PRIVATE_KEY, providerUrl, contractAddress, abi);
 
 // Setup express app
 const app = express();
@@ -47,10 +48,6 @@ app.post("/api/add-task", async (req: Request, res: Response) => {
     const addResult = await ethManager.addTask(taskDescription);
     if (addResult) res.status(201).json({ message: "Task added successfully"});
     res.status(400).json({ error: "Error with adding task to blockchain" })
-});
-
-app.patch("/api/update-task", async (req: Request, res: Response) => {
-    // Update a todo item
 });
 
 app.patch("/api/complete-task", async (req: Request, res: Response) => {

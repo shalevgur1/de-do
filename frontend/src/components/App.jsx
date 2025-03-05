@@ -55,7 +55,6 @@ function App() {
   async function completeTask(id) {
     // Complete a task and send complition to backend
     // Send added task to backend
-    console.log("hello");
     try {
       const response = await fetch(`${SERVER_URL}/api/complete-task`, {
         method: "PATCH",
@@ -74,8 +73,6 @@ function App() {
       console.error("Error adding task:", err);
     }
     // Remove completed task from frontend
-    console.log(tasks);
-    console.log(tasks[0].id);
     setTasks(prevTasks => {
       return prevTasks.filter((taskItem, index) => {
         console.log(taskItem.id);
